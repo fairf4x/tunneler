@@ -15,10 +15,10 @@ Each of the clients controls one tank (in the case of splitscreen mode two) and 
 to the server and receives a reply that also contains the current states of other players.
 Based on this response, it changes the state of the game and displays the result.
 
-## Entry and exit
+## Input and output
 The program uses the SDL library for displaying graphics, timer and keypress processing.
 Tank control:
-normal mode: <kbd>&#8592;</key> <kbd>&#8593;</key> <kbd>&#8594;</key> <kbd>&#8595;</key> - move, <kbd>Left CTRL</kbd> - shoot
+normal mode: <kbd>&#8592;</kbd> <kbd>&#8593;</kbd> <kbd>&#8594;</kbd> <kbd>&#8595;</kbd> - move, <kbd>Left CTRL</kbd> - shoot
 splitscreen mode: 1st player - same as normal mode, 2nd player - <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> <kbd>W</kbd> - move, <kbd>Right CTRL</kbd> - shoot
 
 ## Compiling and Starting
