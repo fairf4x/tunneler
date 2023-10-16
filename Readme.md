@@ -18,8 +18,8 @@ Based on this response, it changes the state of the game and displays the result
 ## Entry and exit
 The program uses the SDL library for displaying graphics, timer and keypress processing.
 Tank control:
-normal mode: <kbd>&uarr &darr &larr &rarr</kbd> - move, <kbd>Left CTRL</kbd> - shoot
-splitscreen mode: 1st player - same as normal mode, 2nd player - <kbd>ASDW</kbd> - move, <kbd>Right CTRL</kbd> - shoot
+normal mode: <kbd>&#8592;</key> <kbd>&#8593;</key> <kbd>&#8594;</key> <kbd>&#8595;</key> - move, <kbd>Left CTRL</kbd> - shoot
+splitscreen mode: 1st player - same as normal mode, 2nd player - <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> <kbd>W</kbd> - move, <kbd>Right CTRL</kbd> - shoot
 
 ## Compiling and Starting
 To compile and run the client part of the program, the SDL library (freely available at www.libsdl.org) is required. 
