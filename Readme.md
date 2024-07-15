@@ -22,8 +22,14 @@ Tank control:
 - splitscreen mode: 1st player - same as normal mode, 2nd player - <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> <kbd>W</kbd> - move, <kbd>Right CTRL</kbd> - shoot
 
 ## Compiling and Starting
-To compile and run the client part of the program, the SDL library (freely available at www.libsdl.org) is required. 
-Compiling should be possible in a reasonable Linux environment using the attached Makefile.
+To compile and run the client part of the program, the SDL 2 library (freely available at www.libsdl.org) is required. 
+Compiling should be possible in a reasonable Linux environment using ``cmake``:
+
+```
+mkdir build; cd build
+cmake ..
+make
+```
 
 The game is executable in normal mode or in splitscreen mode, which allows two players game on one PC.
 A test map (``big_map file``) is included.
@@ -36,9 +42,10 @@ First, you need to start the server, e.g.:
 
 (see server --help for details)
 
-Then, you can start the client; the client requires the following parameters:
+Then, you can start the client. The client executable should be in directory where it can find the `img` directory with game sprites.
+the client requires the following parameters:
 - ip server address
-- map file name (it is assumed that all clients have the same map available)
+- map file path (it is assumed that all clients have the same map available)
 
 ```
 ./tunneler -a ip_address -m map_file
