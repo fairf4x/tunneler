@@ -2,21 +2,21 @@
 #include <string.h>
 
 #include "game.h"
-/* #include "statusbar.h" */
+#include "statusbar.h"
 
 /* ---- definice pro SDL ---- */
 #define SDL_INIT_FLAGS	SDL_INIT_VIDEO|SDL_INIT_TIMER|SDL_INIT_EVENTS	/* flagy pro funkci SDL_Init */
 /* #define SDL_MODE_FLAGS	SDL_ANYFORMAT|SDL_DOUBLEBUF|SDL_SRCALPHA / flagy pro funkci SDL_SetVideoMode */
-#define VIDEO_WIDTH 800		/* sirka obrazovky */
-#define VIDEO_HEIGHT 600		/* vyska obrazovky */
+#define VIDEO_WIDTH 1600		/* sirka obrazovky */
+#define VIDEO_HEIGHT 900		/* vyska obrazovky */
 #define BORDER 10
 
 /* ---- definice pro timer ---- */
 #define TIMER_EVENT 0
 #define TIMER_DELAY 100
 
-#define FRAME_SPLIT_IMG 	"./img/frame_split_1600x900.bmp"
-#define FRAME_IMG		"./img/frame_1600x900.bmp"
+#define FRAME_SPLIT_IMG 	"./img/frame_split_1600x900.png"
+#define FRAME_IMG		"./img/frame_1600x900.png"
 
 /* maximum zivotu ktere budou videt */
 #define VISIBLE_LIVES 10
@@ -32,8 +32,7 @@ Color stru_color = {.r=0, .g=0, .b=120, .a=255};
 Color fire_color = {.r=200, .g=0, .b=0, .a=255};
 
 /* textura ramecku */
-SDL_Surface * frame;
-Uint32 frame_key_color;
+SDL_Texture * frame;
 
 unsigned char answer[SERVER_MSG_LEN];
 
@@ -94,13 +93,16 @@ game::game(bool split,int map_input)
 	
 		cam2 = new camera(renderer,camwin);
 		
-		/* status bar 
-		init_status_bar(camwin->w - 2 * BORDER); */
+		/* status bar */
+		init_status_bar(camwin->w - 2 * BORDER);
 			
 		/* final screen */
-		/* init_final_screen(screen); */
+		init_final_screen(screen);
 
-		frame = SDL_LoadBMP(FRAME_SPLIT_IMG);
+		/* game frame */
+		SDL_Surface * frame_img = IMG_Load(FRAME_SPLIT_IMG);
+		frame = SDL_CreateTextureFromSurface(renderer,frame_img);
+		SDL_FreeSurface(frame_img);
 	}
 	else
 	{
@@ -113,13 +115,15 @@ game::game(bool split,int map_input)
 
 		cam1 = new camera(renderer,camwin);
 		
-		/* status bar 
-		init_status_bar(camwin->w - 2 * BORDER); */
+		/* status bar */ 
+		init_status_bar(camwin->w - 2 * BORDER);
 
 		/* final screen */
 		/* init_final_screen(screen); */
 
-		frame = SDL_LoadBMP(FRAME_IMG);
+		SDL_Surface * frame_img = IMG_Load(FRAME_IMG);
+		frame = SDL_CreateTextureFromSurface(renderer,frame_img);
+		SDL_FreeSurface(frame_img);
 	}
 
 	/* ulozeni informace o splitscreenu (duvod: metoda Draw) */
@@ -127,9 +131,6 @@ game::game(bool split,int map_input)
 
 	/* inicializace tvaru vybuchu */
 	init_dig_hole();
-
-
-	frame_key_color = SDL_MapRGB(frame->format,255,255,255);
 }
 
 game::~game()
@@ -148,9 +149,7 @@ game::~game()
 	delete tanks;
 	delete structures;
 
-	SDL_FreeSurface(frame);
-
-	/* destroy_status_bar(); */
+	SDL_DestroyTexture(frame);
 
 	SDL_Quit();
 }
@@ -416,10 +415,6 @@ void game::DrawScreen_split()
 		}
 	}
 
-	/* ramecek okolo herniho pohledu */
-	SDL_SetColorKey(frame,SDL_TRUE,frame_key_color);
-	SDL_BlitSurface(frame,NULL,screen,NULL);
-
 	/* strely */
 	if(!fire.empty())
 	{
@@ -440,29 +435,32 @@ void game::DrawScreen_split()
 	if( !fin1 )
 	{
 		tmit = tanks->find(pla1->id);
-		/* show_status_bar(cam1,&((*tmit).second)); */
-		/* show_lives(cam1,pla1,VISIBLE_LIVES); */
+		show_status_bar(cam1,&((*tmit).second));
+		show_lives(cam1,pla1,VISIBLE_LIVES);
 	}
 	else
 	{
                 SDL_SetRenderDrawColor(renderer, rock_color.r, rock_color.g, rock_color.b, rock_color.a);
 		SDL_RenderFillRect(renderer,cam1->window);
-		/* show_final_screen(cam1); */
+		show_final_screen(cam1);
 	}
 
 	if( !fin2 )
 	{
 		tmit = tanks->find(pla2->id);
-		/* show_status_bar(cam2,&((*tmit).second)); */
-		/* show_lives(cam2,pla2,VISIBLE_LIVES); */
+		show_status_bar(cam2,&((*tmit).second));
+		show_lives(cam2,pla2,VISIBLE_LIVES);
 	}
 	else
 	{
                 SDL_SetRenderDrawColor(renderer, rock_color.r, rock_color.g, rock_color.b, rock_color.a);
 		SDL_RenderFillRect(renderer,cam2->window);
-		/* show_final_screen(cam2); */
+		show_final_screen(cam2);
 	}
 	
+	/* ramecek okolo herniho pohledu */
+	SDL_RenderCopy(renderer,frame,NULL,NULL);
+
 	SDL_RenderPresent(renderer);
 
 	return;
@@ -489,7 +487,7 @@ void game::DrawScreen()
 	{
                 SDL_SetRenderDrawColor(renderer, rock_color.r, rock_color.g, rock_color.b, rock_color.a);
 		SDL_RenderFillRect(renderer,cam1->window);
-		/* show_final_screen(cam1); */
+		show_final_screen(cam1);
 
 		SDL_RenderPresent(renderer);
 		return;
@@ -504,9 +502,6 @@ void game::DrawScreen()
 	for(tmit = tanks->begin(); tmit != tanks->end(); ++tmit)
 		(*tmit).second.show(cam1);
 
-	/* ramecek okolo herniho pohledu */
-	SDL_SetColorKey(frame,SDL_TRUE,frame_key_color);
-	SDL_BlitSurface(frame,NULL,screen,NULL);
 
 	/* nakresli strely ktere jsou videt a odstran ty ktere uz doletely */
 	if(!fire.empty())
@@ -524,10 +519,13 @@ void game::DrawScreen()
 
 	/* status bar */
 	tmit = tanks->find(pla1->id);
-	/* show_status_bar(cam1,&((*tmit).second)); */
+	show_status_bar(cam1,&((*tmit).second));
 
 	/* pocet zivotu */
 	/* show_lives(cam1,pla1,VISIBLE_LIVES); */
+
+	/* ramecek okolo herniho pohledu */
+	SDL_RenderCopy(renderer,frame,NULL,NULL);
 
 	SDL_RenderPresent(renderer);
 	

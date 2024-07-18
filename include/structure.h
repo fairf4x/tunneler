@@ -17,8 +17,8 @@
 	#include "collisions.h"		*/
 #include <map>
 
+extern SDL_Renderer * renderer;
 extern tmap * landscape;
-extern SDL_Surface * screen;
 
 class structure
 {

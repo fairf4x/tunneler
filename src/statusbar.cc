@@ -13,7 +13,7 @@ Uint32  bmask = 0x00ff0000;
 Uint32  amask = 0xff000000;
 #endif
 
-#define GAME_OVER_PIC "./img/game_over.bmp"
+#define GAME_OVER_PIC "./img/game_over.png"
 
 #define ALPHA_BAR 128
 #define ALPHA_FRA 75
@@ -35,17 +35,13 @@ Uint32  amask = 0xff000000;
 /* promenna zajistujici blikani napisu GAME OVER */
 int blink_index;
 
-/* surface ne kterem se bude sestavovat status bar */
-SDL_Surface * status_bar;
-
 /* barva ramecku status baru */
 Color status_color_key = {.r=30, .g=10, .b=175, .a=ALPHA_FRA};
 
 /* obrazek napisu GAME OVER*/
-SDL_Surface * final_pic;
-
-/* barva ktera bude transparentni v GAME OVER obrazku */
-Uint32 transp_col_final;
+SDL_Texture * final_pic;
+int final_pic_w;
+int final_pic_h;
 
 /* stav armoru a energie se zobrazuje bro ruzna mnozstvi ruznou barvou
  * 75%-100%	xxxx_1
@@ -73,14 +69,6 @@ Uint32 max_width;
 
 int init_status_bar(Uint32 width)
 {
-	status_bar = SDL_CreateRGBSurface(SDL_SWSURFACE, width, SB_HEIGHT, 32,
-	                                   rmask, gmask, bmask, amask);
-	if( status_bar == NULL)
-	{
-		fprintf(stderr,"init_status_bar : SDL_CreateRGBSurface failed");
-		return (1);
-	}
-
 	max_width = width - 2 * SB_MARGIN;
 
 	return (0);
@@ -88,63 +76,66 @@ int init_status_bar(Uint32 width)
 
 int show_status_bar(camera * cam,tank * machine)
 {
-	if(status_bar == NULL)
-	{
-		fprintf(stderr,"show_status_bar : status_bar == NULL");
-		return (1);
-	}
-
-	/* vyplneni cele plochy cernou */
-	SDL_FillRect(status_bar,NULL,status_color_key);
-
 	SDL_Rect * cam_rect = cam->get_window_rect();
 	SDL_Rect rect;
 
+	rect.x = cam_rect->x + SB_MARGIN;
+	rect.y = cam_rect->y + cam_rect->h - ( SB_MARGIN + SB_HEIGHT );
+	rect.w = cam_rect->w - 2*SB_MARGIN;
+	rect.h = SB_HEIGHT;
+
+	SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
+	/* vyplneni cele plochy vychozi barvou */
+	SDL_SetRenderDrawColor(renderer, status_color_key.r, status_color_key.g, status_color_key.b, status_color_key.a);
+	SDL_RenderFillRect(renderer,&rect);
+
 	/* armor */
 	float armor = (float)machine->armor / MAX_ARMOR;
-	rect.x = SB_PADDING;
-	rect.y = SB_PADDING;
+	
+	rect.x = rect.x + SB_PADDING;
+	rect.y = rect.y + SB_PADDING;
 	rect.w = (max_width*machine->armor)/MAX_ARMOR;
 	rect.h = SB_STRIPE_H;
 	
-	if( bottom1 < armor )
-		SDL_FillRect(status_bar,&rect,armor_1);
+	if( bottom1 < armor ){
+		SDL_SetRenderDrawColor(renderer, armor_1.r, armor_1.g, armor_1.b, armor_1.a);
+		SDL_RenderFillRect(renderer,&rect);
+	}
 	else
 	{
-		if( bottom2 < armor )
-			SDL_FillRect(status_bar,&rect,armor_2);
-		else
-			SDL_FillRect(status_bar,&rect,armor_3);
+		if( bottom2 < armor ){
+			SDL_SetRenderDrawColor(renderer, armor_2.r, armor_2.g, armor_2.b, armor_2.a);
+			SDL_RenderFillRect(renderer,&rect);
+		}
+		else{
+			SDL_SetRenderDrawColor(renderer, armor_3.r, armor_3.g, armor_3.b, armor_3.a);
+			SDL_RenderFillRect(renderer,&rect);
+		}
 	}
 
 	/* energy */
 	float energy = (float)machine->energy / MAX_ENERGY;
-	rect.y = SB_PADDING + SB_STRIPE_H + SB_SPACE;
+	rect.y = rect.y + SB_STRIPE_H + SB_SPACE;
 	rect.w = (max_width*machine->energy)/MAX_ENERGY;
 
-	if( bottom1 < energy )
-		SDL_FillRect(status_bar,&rect,energy_1);
+	if( bottom1 < energy ){
+		SDL_SetRenderDrawColor(renderer, energy_1.r, energy_1.g, energy_1.b, energy_1.a);
+		SDL_RenderFillRect(renderer,&rect);
+	}
 	else
 	{
-		if( bottom2 < energy )
-			SDL_FillRect(status_bar,&rect,energy_2);
+		if( bottom2 < energy ){
+			SDL_SetRenderDrawColor(renderer, energy_2.r, energy_2.g, energy_2.b, energy_2.a);
+			SDL_RenderFillRect(renderer,&rect);
+		}
 		else
-			SDL_FillRect(status_bar,&rect,energy_3);
+		{
+			SDL_SetRenderDrawColor(renderer, energy_3.r, energy_3.g, energy_3.b, energy_3.a);
+			SDL_RenderFillRect(renderer,&rect);
+		}
 	}
 
-	rect.x = cam_rect->x + SB_MARGIN;
-	rect.y = cam_rect->y + cam_rect->h - ( SB_MARGIN + SB_HEIGHT );
-	rect.w = status_bar->w;
-	rect.h = status_bar->h;
-
-	SDL_BlitSurface(status_bar,NULL,cam->canvas,&rect);
-
 	return (0);
-}
-
-void destroy_status_bar()
-{
-	SDL_FreeSurface(status_bar);
 }
 
 int show_lives(camera * cam, player * pla, int max_lives)
@@ -156,27 +147,34 @@ int show_lives(camera * cam, player * pla, int max_lives)
 	scratch_rect.y = cam->window->y + LIVES_MARGIN;
 	scratch_rect.x = cam->window->x + LIVES_MARGIN;
 
+	SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(renderer, lives_col.r, lives_col.g, lives_col.b, lives_col.a);
+
 	for(i=0; i < pla->life; ++i)
 	{
 		if(i > (max_lives-1))
 			return (1);
 
-		SDL_FillRect(cam->canvas,&scratch_rect,lives_col);
+		SDL_RenderFillRect(renderer,&scratch_rect);
 		scratch_rect.x += LIVES_WIDTH + LIVES_SPACE;
 	}
+
 	return (0);
 }
 
 int init_final_screen(SDL_Surface * screen)
 {
-	final_pic = SDL_LoadBMP(GAME_OVER_PIC);
+	SDL_Surface * final_pic_img = IMG_Load(GAME_OVER_PIC);
+	final_pic_w = final_pic_img->w;
+	final_pic_h = final_pic_img->h;
+	final_pic = SDL_CreateTextureFromSurface(renderer,final_pic_img);
+	SDL_FreeSurface(final_pic_img);
+
 	if( final_pic == NULL )
 	{
 		fprintf(stderr,"init_final_screen: can't load bitmap\n");
 		exit(1);
 	}
-
-	transp_col_final = SDL_MapRGB(final_pic->format,255,255,255);
 
 	blink_index = 0;
 
@@ -188,15 +186,14 @@ int show_final_screen(camera * cam)
 	if( (blink_index % BLINK_MODULO) < BLINK_VAL )
 	{
 		SDL_Rect rect;
-		rect.w = final_pic->w;
-		rect.h = final_pic->h;
+		rect.w = final_pic_w;
+		rect.h = final_pic_h;
 
-		rect.x = cam->window->x + (cam->window->w / 2) - (final_pic->w / 2); 
-		rect.y = cam->window->y + (cam->window->h / 2) - (final_pic->h / 2); 
+		rect.x = cam->window->x + (cam->window->w / 2) - (final_pic_w / 2); 
+		rect.y = cam->window->y + (cam->window->h / 2) - (final_pic_h / 2); 
 		
-		SDL_SetColorKey(final_pic,SDL_TRUE,transp_col_final);
-		
-		SDL_BlitSurface(final_pic,NULL,cam->canvas,&rect);
+		SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_NONE);
+		SDL_RenderCopy(renderer,final_pic,NULL,&rect);
 	}
 		
 	++blink_index;

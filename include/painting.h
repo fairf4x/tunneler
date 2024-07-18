@@ -11,11 +11,14 @@
 #define BOTTOM_RIGHT 	'X'
 #define ERROR 		'E'
 
+extern SDL_Renderer * renderer;
+
 struct tank_sprites{
 	tank_sprites(SDL_Renderer * renderer,Uint32 pixw, Uint32 pixh,char id);
 	~tank_sprites();
 	Uint32 color_key;
 	SDL_Rect rect;
+	SDL_Texture * color_dot;
 	SDL_Texture * tank_up;
 	SDL_Texture * tank_down;
 	SDL_Texture * tank_left;
@@ -30,7 +33,7 @@ struct structure_sprite{
 	structure_sprite(Uint32 pixw, Uint32 pixh, char id);
 	~structure_sprite();
 	SDL_Rect rect;
-	SDL_Surface * structure_img;
+	SDL_Texture * structure_img;
 };
 
 char decide_location( size_t x, size_t y, size_t w, size_t h);

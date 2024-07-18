@@ -206,7 +206,7 @@ bool tank::show(camera * cam)
 			default:
 			break;
 		}
-	
+
 		return (true);
 	}
 	else

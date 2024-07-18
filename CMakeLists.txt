@@ -23,7 +23,7 @@ add_library(Tunneler_modules
 	${Tunneler_SOURCE_DIR}/src/commondef.cc
 	${Tunneler_SOURCE_DIR}/src/painting.cc
 	${Tunneler_SOURCE_DIR}/src/player.cc
-	#	${Tunneler_SOURCE_DIR}/src/statusbar.cc
+	${Tunneler_SOURCE_DIR}/src/statusbar.cc
 	${Tunneler_SOURCE_DIR}/src/structure.cc
 	${Tunneler_SOURCE_DIR}/src/tank.cc
 	${Tunneler_SOURCE_DIR}/src/tmap.cc

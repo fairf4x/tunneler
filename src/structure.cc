@@ -81,11 +81,9 @@ bool structure::show(camera * cam)
 				fprintf(stderr,"tank::show decide_location ERROR\n");
 		}
 
-		/*
-		SDL_SetClipRect(cam->canvas,cam->window);
-		SDL_BlitSurface(picture->structure_img,NULL,cam->canvas,&(picture->rect));
-		SDL_SetClipRect(cam->canvas,NULL);
-*/
+
+		SDL_RenderCopy(renderer,picture->structure_img,NULL,&(picture->rect));
+
 		return (true);
 	}
 	else

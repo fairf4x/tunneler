@@ -10,7 +10,7 @@
 /*	#include "collisions.h"
 	#include "tmap.h" 	*/
 
-#define MAX_ENERGY 5000
+#define MAX_ENERGY 1000
 #define MAX_ARMOR 300
 
 #define ENERGY_RECOVERY_HOME 40
@@ -50,7 +50,6 @@
 extern const char* TANK_SHAPE;
 
 extern tmap * landscape;
-/* extern SDL_Surface * screen; */
 extern SDL_Renderer * renderer;
 
 class tank
