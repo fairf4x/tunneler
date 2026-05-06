@@ -162,7 +162,8 @@ int * generate_init_vect(int mapfile,unsigned char player_cnt)
 	int * res = new int[MAX_PLAYER_CNT*2];
 	int * act_pos = res;
 	/* inicializace seedu */
-	srandom(getpid());
+	/*srandom(getpid());*/
+	srandom(123);
 
 	/* nagenerovani "mist" */
 	place_list * places = deploy_places(player_cnt,map_x,map_y);

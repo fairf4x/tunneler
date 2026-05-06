@@ -151,10 +151,11 @@ bool tank::show(camera * cam)
 		/* vypocet souradnic obrazku na screen pro SDL_BlitSurface */
 		cam_x = cam->visible_area.x;
 		cam_y = cam->visible_area.y;
+		
 		xd = AbsClockwise(shape->x,cam_x,HORIZONTAL,landscape);
 		yd = AbsClockwise(shape->y,cam_y,VERTICAL,landscape);
-		
-		switch(decide_location(xd,yd,TANK_WIDTH,TANK_HEIGHT))
+
+		switch(decide_location(xd,yd,TANK_WIDTH,TANK_HEIGHT,shape))
 		{
 			case BOTTOM_RIGHT: /* pripad "X" */
 				cam->get_screen_coords(shape->x,shape->y,corner_spot);

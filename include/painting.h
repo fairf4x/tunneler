@@ -1,15 +1,18 @@
 #ifndef _PAINTING_H
 #define _PAINTING_H
 
+#include "collisions.h"
 #include <SDL.h>
 #include <SDL_image.h>
 
 /* definice navratovych hodnot pomocne funkce decide_location */
-#define TOP_LEFT 	'#'
+/*#define TOP_LEFT 	'#'
 #define BOTTOM_LEFT 	'|'
 #define TOP_RIGHT 	'-'
 #define BOTTOM_RIGHT 	'X'
-#define ERROR 		'E'
+#define ERROR 		'E'*/
+
+typedef enum {CENTER, TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, BOTTOM_LEFT, TOP_RIGHT, BOTTOM_RIGHT} EdgeCase;
 
 extern SDL_Renderer * renderer;
 
@@ -36,6 +39,6 @@ struct structure_sprite{
 	SDL_Texture * structure_img;
 };
 
-char decide_location( size_t x, size_t y, size_t w, size_t h);
+EdgeCase decide_location( size_t x, size_t y, size_t w, size_t h, area * rect);
 
 #endif

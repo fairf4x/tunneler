@@ -26,17 +26,17 @@ typedef struct {
 class camera
 {
 	public:
-	camera(SDL_Renderer * ren,SDL_Rect * win);
+	camera(SDL_Renderer * ren,SDL_Rect * win,int cam_id);
 	~camera();
 	void set(coord position);	/* zameri stred kamery na dane souradnice */
 	void shot(void);		/* "vyfoti" mapu na aktualnich souradnicich */
 	int target_x(void);		/* vrati x-ovou souradnici dlazdicky uprostred zaberu */
 	int target_y(void);		/* vrati y-ovou souradnici dlazdicky uprostred zaberu */
+	int get_id(void);               /* vrati ID kamery */
 	bool is_on_screen(int inx,int iny);	/* zjisti zda je bod na danych souradnicich v zaberu */
 	
-	/* dosadi do "spot" souradnice bodu (mx,my) vzhledem k obrazovce a vrati 0 
-	 * pokud bod se zadanymi souradnicemi neni v zaberu kamery vrati -1 */
-	int get_screen_coords(int mx, int my, SDL_Rect & spot);
+	/* dosadi do "spot" souradnice bodu (mx,my) vzhledem k obrazovce */
+	void get_screen_coords(int mx, int my, SDL_Rect & spot);
 	
 	area visible_area;	/* prostor ktery kamera zabira na mape */
 	SDL_Rect * get_window_rect();	/* vrati obdelnik pro vykreslovani */
@@ -52,6 +52,7 @@ class camera
 	private:
 	SDL_Renderer * renderer;    /* ukazatel na renderer, ktery vykresluje obrazek sejmuty kamerou */
 	SDL_Rect * window;	 /* ctverec do ktereho se ma kreslit */
+	int id;
 	
 };
 

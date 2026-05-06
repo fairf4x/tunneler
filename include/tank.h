@@ -10,7 +10,7 @@
 /*	#include "collisions.h"
 	#include "tmap.h" 	*/
 
-#define MAX_ENERGY 1000
+#define MAX_ENERGY 8000
 #define MAX_ARMOR 300
 
 #define ENERGY_RECOVERY_HOME 40

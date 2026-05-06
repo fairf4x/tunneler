@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include "tmap.h"
 #include "collisions.h"
+#include <bits/stdc++.h>
+
+using namespace std;
 
 /* pomocne funkce */
 int my_read(int file,char * buff,size_t nbyte)
@@ -178,28 +181,106 @@ void tmap::parse_first_line(int input)
 	printf("map header OK");
 }
 
+/* Determine distance of two points on the rolling map with respect to given axis
+ *  01234567 01234567
+ * |2----1--|2----1--|
+ * 
+ * now the distance from 1 to 2 is 3
+ *
+ * Returned value gives tile count.
+ * */
 size_t	AbsClockwise(int p1, int p2, char axis, tmap * landscape)
+{	
+	int c;
+	
+	switch (axis)
+	{
+		case VERTICAL: c = (int)landscape->height;
+		break;
+		case HORIZONTAL: c = (int)landscape->width;
+		break;
+		default: fprintf(stderr,"AbsClockwise (tmap.cc): unknown axis\n");
+	}
+
+	p1 = p1 % c;
+	p2 = p2 % c;
+
+	int res = ( p2 - p1) % c;
+
+	if (res < 0)
+		return (size_t)(res + c);
+	else
+		return (size_t)res;
+}
+
+/* Return true if <a1,a2> overlaps with <b1,b2>.
+ * Set overlap to:
+ * +VAL => a--|--|--b
+ * -VAL => b--|--|--a
+ *  where VAL is the length of overlap
+ *
+ *  If there is no overlap return false and do not change overlap value.
+*/
+bool  intervalOverlap(int a1, int a2, int b1, int b2, int & overlap, char axis, tmap * landscape)
 {
-	if (p1 == p2)
-		return (0);
-	
-	if (p1 < p2)
-		return ( p2 - p1 );
-	
 	size_t c;
-	
 	switch (axis)
 	{
 		case VERTICAL: c = landscape->height;
 		break;
 		case HORIZONTAL: c = landscape->width;
 		break;
-		default: fprintf(stderr,"camera::AbsClockwise: unknown axis\n");
+		default: fprintf(stderr,"intervalOverlap (tmap.cc): unknown axis\n");
 	}
 
-	if (p1 > p2)
-		return ( p2 - p1 + c);
+	a1 = a1 % c;
+	a2 = a2 % c;
+	b1 = b1 % c;
+	b2 = b2 % c;
+
+	size_t d1 = AbsClockwise(a1,b1,axis,landscape);
+	size_t d2 = AbsClockwise(a1,a2,axis,landscape);
+	size_t d3 = AbsClockwise(b1,a1,axis,landscape);
+	size_t d4 = AbsClockwise(b1,b2,axis,landscape);
+
+	if (d1 <= d2){
+		overlap = std::min(DistMod(a2,b1,axis,landscape),DistMod(b1,b2,axis,landscape));
+		return true;
+	}
 	
-	fprintf(stderr,"camera::AbsClockwise: can't determine value\n");
-	return (0); 
+	if (d3 <= d4){
+		overlap = -std::min(DistMod(b2,a1,axis,landscape),DistMod(a1,a2,axis,landscape));
+		return true;
+	}
+
+	overlap = 0;
+
+	return false;
+}
+
+size_t  DistMod(int p1, int p2, char axis, tmap * landscape)
+{
+	int c;
+
+	switch (axis)
+	{
+		case VERTICAL: c = landscape->height;
+		break;
+		case HORIZONTAL: c = landscape->width;
+		break;
+		default: fprintf(stderr,"DistMod (tmap.cc): unknown axis\n");
+	}
+
+	/* uprava souradnice modulo c (podle osy)*/
+	p1 = p1 % c;
+	if (p1 < 0)
+		p1 += c;
+	
+	p2 = p2 % c;
+	if (p2 < 0)
+		p2 += c;
+
+	/* vzdalenost dvou bodu na kruhu je definovana jako minimum vzdalenosti jednim nebo druhym smerem */
+	size_t av = std::abs(p1-p2);
+	return std::min(av,c - av);
 }

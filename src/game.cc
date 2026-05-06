@@ -81,7 +81,7 @@ game::game(bool split,int map_input)
 		camwin->x = camwin->w + 3 * BORDER;
 		camwin->y = BORDER;
 	
-		cam1 = new camera(renderer,camwin);
+		cam1 = new camera(renderer,camwin,1);
 		
 		/* druha kamera */
 		camwin = new SDL_Rect;
@@ -91,7 +91,7 @@ game::game(bool split,int map_input)
 		camwin->x = BORDER;
 		camwin->y = BORDER;
 	
-		cam2 = new camera(renderer,camwin);
+		cam2 = new camera(renderer,camwin,2);
 		
 		/* status bar */
 		init_status_bar(camwin->w - 2 * BORDER);
@@ -113,7 +113,7 @@ game::game(bool split,int map_input)
 		camwin->x = BORDER;
 		camwin->y = BORDER;
 
-		cam1 = new camera(renderer,camwin);
+		cam1 = new camera(renderer,camwin,1);
 		
 		/* status bar */ 
 		init_status_bar(camwin->w - 2 * BORDER);
@@ -164,7 +164,7 @@ void game::execute()
 	 * (za neplatne je v tomto kontextu povazovano ID >= MAX_PLAYER_CNT)
 	 * id je obsazeno vzdy v prvnim znaku klientske zpravy answer[FIRST] */
 
-	print_answer(answer);/* ladici vypis dosle zpravy  */
+	/* print_answer(answer); ladici vypis dosle zpravy  */
 
 	while( (i < player_cnt) && (answer[FIRST] < MAX_PLAYER_CNT) )
 	{
@@ -522,7 +522,7 @@ void game::DrawScreen()
 	show_status_bar(cam1,&((*tmit).second));
 
 	/* pocet zivotu */
-	/* show_lives(cam1,pla1,VISIBLE_LIVES); */
+	show_lives(cam1,pla1,VISIBLE_LIVES);
 
 	/* ramecek okolo herniho pohledu */
 	SDL_RenderCopy(renderer,frame,NULL,NULL);

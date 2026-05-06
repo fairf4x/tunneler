@@ -23,8 +23,6 @@ struct coord_comp;
 
 typedef	std::set < coord, coord_comp > coord_set;
 
-struct area;
-
 class tmap
 {
 	public:
@@ -48,7 +46,10 @@ class tmap
 	
 	friend class camera;
 	friend size_t AbsClockwise(int ,int , char , tmap *);
+	friend size_t DistMod(int, int, char, tmap *);
+	friend bool intervalOverlap(int, int, int, int, int&, char, tmap *); 
 	friend area * generate_place(tmap *);
+	friend bool intersection(const area &, const area &, area &);
 
 	private:
 	void parse_first_line(int input);	/* nacte informace o mape z prvni radky souboru */

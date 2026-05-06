@@ -162,16 +162,16 @@ structure_sprite::~structure_sprite()
 
 /* komentar k pomocne funkci decide_location
  *
- * #-----
+ * +-----
  * |XXXXX
  * |XXXXX
  *
  * X : dlazdicky v zaberu kamery
- * #,-,| : dlazdicky mimo zaber kamery, jejichz souradnice jsou treba jako pocatecni bod pro 
+ * +,-,| : dlazdicky mimo zaber kamery, jejichz souradnice jsou treba jako pocatecni bod pro 
  * SDL_RenderCopy pri vykreslovani obrazku tanku
  */
 
-char decide_location( size_t x, size_t y, size_t w, size_t h)
+EdgeCase decide_location( size_t x, size_t y, size_t w, size_t h, area * rect)
 {
 	if( (x >= w ) && (y >= h ) )
 		return BOTTOM_RIGHT;
@@ -184,7 +184,7 @@ char decide_location( size_t x, size_t y, size_t w, size_t h)
 	
 	if( (x < w ) && (y < h ) )
 		return TOP_LEFT;
-	
-	return ERROR;
+
+	return CENTER;
 }
 

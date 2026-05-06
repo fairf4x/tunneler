@@ -1,5 +1,8 @@
 #include "collisions.h"
 #include <string.h>
+#include <bits/stdc++.h>
+
+using namespace std;
 
 collision_shape::collision_shape(int xc, int yc, size_t width, size_t height,const char * bitmap)
 {
@@ -45,22 +48,13 @@ bool collision_shape::map_collision(char type)
 
 bool operator%(const area & A, const area & B)
 {
-	/* kontrola prekryti projekce na osu x */
-	if ( 	(AbsClockwise(A.x, B.x, HORIZONTAL, landscape) < A.w ) || 
-		(AbsClockwise(B.x, A.x, HORIZONTAL, landscape) < B.w )		)
-	{
-		/* doslo k prekryti -> je potreba zkontrolovat vuci ose y */
-		if (	(AbsClockwise(A.y, B.y, VERTICAL, landscape) < A.h ) ||
-			(AbsClockwise(B.y, A.y, VERTICAL, landscape) < B.h )	)
-			/* doslo k prekryti */
-			return (true);
-		else
-			/* nedoslo k prekryti */
-			return (false);
-	}
-	else
-		/* nedoslo k prekryti projekce na osu x -> neprekryvaji se */
-		return (false);
+	int HOverLen;
+	int VOverLen;
+	bool HOver = intervalOverlap(A.x,(A.x + A.w),B.x,(B.x + B.w),HOverLen,HORIZONTAL, landscape);
+
+	bool VOver = intervalOverlap(A.y,(A.y + A.h),B.y,(B.y + B.h),HOverLen,VERTICAL , landscape);
+
+	return (HOver && VOver);
 }
 
 bool operator%(const area & A, const coord & C)
@@ -139,6 +133,39 @@ bool operator*(const collision_shape & A, const coord & C)
 		return (true);
 	else
 		return (false);
+}
+
+/* prunik dvou oblasti */
+bool intersection(const area & A, const area & B, area & C)
+{
+	
+	int HOverlap;
+	int VOverlap;
+	bool HOver = intervalOverlap(A.x,(A.x+A.w),B.x,(B.x+B.w),HOverlap,HORIZONTAL,landscape);
+	bool VOver = intervalOverlap(A.y,(A.y+A.h),B.y,(B.y+B.h),VOverlap,VERTICAL,landscape);
+	if (HOver && VOver){
+		/* prunik v obou osach */
+		if (HOverlap > 0)
+			/* A je vlevo od B */
+			C.x = B.x;
+		else
+			/* A je vpravo od B */
+			C.x = A.x;
+		
+		C.w = std::abs(HOverlap);
+
+		if (VOverlap > 0)
+			/* A je nad B */
+			C.y = B.y;
+		else
+			/* A je pod B */
+			C.y = A.y;
+
+		C.h = std::abs(VOverlap);
+
+		return true;
+	} else
+		return false;
 }
 
 area::area(int xc, int yc, size_t width, size_t height)

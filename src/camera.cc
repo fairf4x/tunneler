@@ -8,7 +8,7 @@ extern Color path_color;
 extern Color stru_color;
 extern Color fire_color;
 
-camera::camera(SDL_Renderer * ren,SDL_Rect * win)
+camera::camera(SDL_Renderer * ren,SDL_Rect * win, int cam_id)
 {
 	/* mapa nesmi byt mensi nez 
 	 * okno kamery
@@ -31,7 +31,8 @@ camera::camera(SDL_Renderer * ren,SDL_Rect * win)
 	
 	visible_area.w = window->w / TILE_SIZE;	/* kolik dlazdicek se vejde do okna na sirku */
 	visible_area.h = window->h / TILE_SIZE;	/* -//- na vysku */
-
+						    
+	id = cam_id;
 }
 
 camera::~camera()
@@ -131,31 +132,36 @@ int camera::target_y(void)		/* vrati y-ovou souradnici dlazdicky uprostred zaber
 	return visible_area.y + (visible_area.h / 2);
 }
 
+int camera::get_id(void)
+{
+	return id;
+}
+
 bool camera::is_on_screen(int inx,int iny)	/* zjisti zda je bod na danych souradnicich v zaberu*/
 {
 	landscape->correct_coord(inx,iny);
 
 	/* inx musi byt mezi x a x+h_tiles a iny musi byt mezi y a y+v_tiles */ 
-	if ( 	(AbsClockwise(visible_area.x,inx,HORIZONTAL,landscape) < visible_area.w) &&
-		(AbsClockwise(visible_area.y,iny,VERTICAL,landscape) < visible_area.h)	)
+	if ( 	(DistMod(visible_area.x,inx,HORIZONTAL,landscape) <= visible_area.w) &&
+		(DistMod(visible_area.y,iny,VERTICAL,landscape) <= visible_area.h)	)
 		return true;
 	else
 		return false;
 }
 
-int camera::get_screen_coords(int mx, int my, SDL_Rect & spot)
+/* Prepocitava souradnice mapy na souradnice k vykresleni */
+void camera::get_screen_coords(int mx, int my, SDL_Rect & spot)
 {
-	if(is_on_screen(mx,my))
-	{
-		spot.x = window->x + TILE_SIZE * AbsClockwise(visible_area.x,mx,HORIZONTAL,landscape);
-		spot.y = window->y + TILE_SIZE * AbsClockwise(visible_area.y,my,VERTICAL,landscape);
-		spot.w = TILE_SIZE;
-		spot.h = TILE_SIZE;
+	int hDist = AbsClockwise(visible_area.x,mx,HORIZONTAL,landscape);
+	int vDist = AbsClockwise(visible_area.y,my,VERTICAL,landscape);
+	
+	//int hDist = DistMod(visible_area.x,mx,HORIZONTAL,landscape);
+	//int vDist = DistMod(visible_area.y,my,VERTICAL,landscape);
 
-		return 0;
-	}
-	else
-		return -1;
+	spot.x = window->x + TILE_SIZE * hDist;
+	spot.y = window->y + TILE_SIZE * vDist;
+	spot.w = TILE_SIZE;
+	spot.h = TILE_SIZE;
 }
 
 void camera::print_coords()

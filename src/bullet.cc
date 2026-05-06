@@ -97,7 +97,8 @@ void bullet::show(camera * cam)
 	if( cam->visible_area % pos )
 	{
 		SDL_Rect ctv;
-		if(cam->get_screen_coords((int)pos.x,(int)pos.y,ctv) == 0)
+		if(cam->is_on_screen((int)pos.x,(int)pos.y))
+			cam->get_screen_coords((int)pos.x,(int)pos.y,ctv);
 			SDL_SetRenderDrawColor(renderer,fire_color.r,fire_color.g,fire_color.b,fire_color.a);
 			SDL_RenderFillRect(renderer,&ctv);
 	}

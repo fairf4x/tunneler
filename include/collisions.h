@@ -5,6 +5,7 @@
 
 #include <set>
 #include <list>
+#include <SDL.h>
 extern tmap * landscape;
 
 struct coord
@@ -71,5 +72,8 @@ bool operator*(const collision_shape & A, const collision_shape & B);
 
 /* operator "jemne" kolize pro collision_shape a bod */
 bool operator*(const collision_shape & A, const coord & C);
+
+/* prunik dvou obdelnikovych oblasti */
+bool intersection(const area & A, const area & B, area & C);
 
 #endif

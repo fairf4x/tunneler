@@ -1,5 +1,10 @@
 #include "structure.h"
 #include "commondef.h"	/* kvuli konstante MAX_PLAYER_CNT */
+#include <bits/stdc++.h>
+
+using namespace std;
+
+extern Color fire_color;
 
 structure::structure(char init_id, int xc, int yc,const char * bitmap)
 {
@@ -43,51 +48,47 @@ structure::structure(char init_id, int xc, int yc,const char * bitmap)
 
 bool structure::show(camera * cam)
 {
-	SDL_Rect corner_spot;
-	size_t xd;
-	size_t yd;
-	int cam_x;
-	int cam_y;
+	// vyrez mapy ktery je videt urcuje area cam->visible_area
+	area cutA;
+	SDL_Rect structArea;
+	SDL_Rect imgCut;
+	imgCut.x = 0;
+	imgCut.y = 0;
 	
-	/* pokud area koliduje se zaberem kamery */
-	if( ground % cam->visible_area)
+	size_t xd = 0;
+	size_t yd = 0;
+
+	bool visible = intersection(cam->visible_area,ground,cutA);
+	if( visible )
 	{
-		/* vypocet souradnic obrazku na screen pro SDL_BlitSurface */
-		cam_x = cam->visible_area.x;
-		cam_y = cam->visible_area.y;
-		xd = AbsClockwise(ground.x,cam_x,HORIZONTAL,landscape);
-		yd = AbsClockwise(ground.y,cam_y,VERTICAL,landscape);
+		cam->get_screen_coords(cutA.x,cutA.y,structArea);
+		SDL_SetRenderDrawColor(renderer,fire_color.r,fire_color.g,fire_color.b,60);
 		
-		switch(decide_location(xd,yd,STRUCTURE_WIDTH,STRUCTURE_HEIGHT))
-		{
-			case BOTTOM_RIGHT: /* pripad "X" */
-				cam->get_screen_coords(ground.x,ground.y,corner_spot);
-				picture->rect.x = corner_spot.x;
-				picture->rect.y = corner_spot.y;
-			break;
-			case BOTTOM_LEFT: /* pripad "|" */
-				picture->rect.x = cam->window->x - (TILE_SIZE * xd);
-				picture->rect.y = cam->window->y + TILE_SIZE*AbsClockwise(cam_y,ground.y,VERTICAL,landscape);
-			break;
-			case TOP_RIGHT: /* pripad "-" */
-				picture->rect.x = cam->window->x + TILE_SIZE*AbsClockwise(cam_x,ground.x,HORIZONTAL,landscape);
-				picture->rect.y = cam->window->y - (TILE_SIZE * yd);
-			break;
-			case TOP_LEFT: /* pripad "#" */
-				picture->rect.x = cam->window->x - (TILE_SIZE * xd);
-				picture->rect.y = cam->window->y - (TILE_SIZE * yd);
-			break;
-			default:
-				fprintf(stderr,"tank::show decide_location ERROR\n");
-		}
+		cam->print_coords();
+		printf("cutA: %d,%d,%lu,%lu\n",cutA.x,cutA.y,cutA.w,cutA.h);
 
+		if (cutA.x != ground.x)
+			xd = DistMod(cutA.x,ground.x,HORIZONTAL,landscape);
 
-		SDL_RenderCopy(renderer,picture->structure_img,NULL,&(picture->rect));
+		if (cutA.y != ground.y)
+			yd = DistMod(cutA.y,ground.y,VERTICAL,landscape);
 
-		return (true);
+		printf("dist: %lu,%lu\n",xd,yd);
+
+		imgCut.x = (int)xd * TILE_SIZE;
+		imgCut.y = (int)yd * TILE_SIZE;
+		imgCut.w = cutA.w * TILE_SIZE;
+		imgCut.h = cutA.h * TILE_SIZE;
+		
+		printf("imgC: %d,%d,%d,%d\n",imgCut.x,imgCut.y,imgCut.w,imgCut.h);
+
+		structArea.w = cutA.w * TILE_SIZE;
+		structArea.h = cutA.h * TILE_SIZE;
+
+		SDL_RenderCopy(renderer,picture->structure_img,&imgCut,&structArea);
 	}
-	else
-		return (false);
+
+	return true;
 }
 
 area * structure::get_area()
