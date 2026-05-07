@@ -121,6 +121,40 @@ void camera::shot(void)
 	return;
 }
 
+void camera::render(SDL_Texture * sprite, const area & spriteArea)
+{
+	area mapCut;
+	SDL_Rect imgCut;
+	SDL_Rect imgArea;
+
+	size_t xd = 0;
+	size_t yd = 0;
+
+	bool visible = intersection(visible_area,spriteArea,mapCut);
+	if (visible){
+		// inicializuje imgArea jako jeden ctverecek na screenu
+		get_screen_coords(mapCut.x,mapCut.y,imgArea);
+
+		// posun horniho leveho rohu imgCut
+		// dolni pravy roh se posunuje zkracovanim sirky a vysky mapCut
+		if (imgArea.x != spriteArea.x)
+			xd = DistMod(mapCut.x,spriteArea.x,HORIZONTAL,landscape);
+
+		if (imgArea.y != spriteArea.y)
+			yd = DistMod(mapCut.y,spriteArea.y,VERTICAL,landscape);
+
+		imgCut.x = (int)xd * TILE_SIZE;
+		imgCut.y = (int)yd * TILE_SIZE;
+		imgCut.w = mapCut.w * TILE_SIZE;
+		imgCut.h = mapCut.h * TILE_SIZE;
+
+		imgArea.w = imgCut.w;
+		imgArea.h = imgCut.h;
+
+		SDL_RenderCopy(renderer, sprite, &imgCut, &imgArea);
+	}
+}
+
 
 int camera::target_x(void)		/* vrati x-ovou souradnici dlazdicky uprostred zaberu */
 {

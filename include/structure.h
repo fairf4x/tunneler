@@ -24,7 +24,7 @@ class structure
 {
 	public:
 	structure(char init_id, int xc, int yc, const char * bitmap);
-	bool show(camera * cam);
+	void show(camera * cam);
 	area * get_area();
 	char id;
 

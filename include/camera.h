@@ -30,6 +30,7 @@ class camera
 	~camera();
 	void set(coord position);	/* zameri stred kamery na dane souradnice */
 	void shot(void);		/* "vyfoti" mapu na aktualnich souradnicich */
+	void render(SDL_Texture * sprite, const area & spriteArea);       /* vykresli obrazek sprite, ktery se nachazi v prostoru area na mape. Pouze pokud je area v zaberu kamery. Resi i oriznuti. */
 	int target_x(void);		/* vrati x-ovou souradnici dlazdicky uprostred zaberu */
 	int target_y(void);		/* vrati y-ovou souradnici dlazdicky uprostred zaberu */
 	int get_id(void);               /* vrati ID kamery */

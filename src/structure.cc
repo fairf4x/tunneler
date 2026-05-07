@@ -46,49 +46,9 @@ structure::structure(char init_id, int xc, int yc,const char * bitmap)
 	picture = new structure_sprite(STRUCTURE_WIDTH*TILE_SIZE,STRUCTURE_HEIGHT*TILE_SIZE,id-MAX_PLAYER_CNT);
 }
 
-bool structure::show(camera * cam)
+void structure::show(camera * cam)
 {
-	// vyrez mapy ktery je videt urcuje area cam->visible_area
-	area cutA;
-	SDL_Rect structArea;
-	SDL_Rect imgCut;
-	imgCut.x = 0;
-	imgCut.y = 0;
-	
-	size_t xd = 0;
-	size_t yd = 0;
-
-	bool visible = intersection(cam->visible_area,ground,cutA);
-	if( visible )
-	{
-		cam->get_screen_coords(cutA.x,cutA.y,structArea);
-		SDL_SetRenderDrawColor(renderer,fire_color.r,fire_color.g,fire_color.b,60);
-		
-		cam->print_coords();
-		printf("cutA: %d,%d,%lu,%lu\n",cutA.x,cutA.y,cutA.w,cutA.h);
-
-		if (cutA.x != ground.x)
-			xd = DistMod(cutA.x,ground.x,HORIZONTAL,landscape);
-
-		if (cutA.y != ground.y)
-			yd = DistMod(cutA.y,ground.y,VERTICAL,landscape);
-
-		printf("dist: %lu,%lu\n",xd,yd);
-
-		imgCut.x = (int)xd * TILE_SIZE;
-		imgCut.y = (int)yd * TILE_SIZE;
-		imgCut.w = cutA.w * TILE_SIZE;
-		imgCut.h = cutA.h * TILE_SIZE;
-		
-		printf("imgC: %d,%d,%d,%d\n",imgCut.x,imgCut.y,imgCut.w,imgCut.h);
-
-		structArea.w = cutA.w * TILE_SIZE;
-		structArea.h = cutA.h * TILE_SIZE;
-
-		SDL_RenderCopy(renderer,picture->structure_img,&imgCut,&structArea);
-	}
-
-	return true;
+	cam->render(picture->structure_img,ground);
 }
 
 area * structure::get_area()
