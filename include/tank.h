@@ -58,7 +58,7 @@ class tank
 	tank(unsigned char init_id);
 	void set_position(int x,int y);
 	bool move(char dir);	/* pohne tankem v zadanem smeru */
-	bool show(camera * cam);/* ukaze tank v okne dane kamery */
+	void show(camera * cam);/* ukaze tank v okne dane kamery */
 	int get_hit(int damage);		/* odecte armor pri zasahu */
 	void regenerate(char bunkr_id);	/* obnoveni energy a armor - doma rychleji nez jinde */
 	void fire();		/* odecte energii za odpaleni strely */

@@ -137,82 +137,53 @@ bool tank::move(char dir)
 	return (true);
 }
 
-bool tank::show(camera * cam)
+void tank::show(camera * cam)
 {
-	SDL_Rect corner_spot;
-	size_t xd;
-	size_t yd;
-	int cam_x;
-	int cam_y;
+	area spriteArea;
+
+	// TODO: spocitat flek zabrany na mape podle pozice tanku (je to ctverec 7x7)
+	coord pos = get_position();
+
+	spriteArea.x = pos.x;
+	spriteArea.y = pos.y;
+	spriteArea.w = TANK_WIDTH;
+	spriteArea.h = TANK_HEIGHT;
+
+	landscape->correct_coord(spriteArea.x,spriteArea.y);
 
 	/* pokud tank "koliduje" se zaberem kamery */
 	if( (*shape) % (cam->visible_area) )
 	{	
-		/* vypocet souradnic obrazku na screen pro SDL_BlitSurface */
-		cam_x = cam->visible_area.x;
-		cam_y = cam->visible_area.y;
-		
-		xd = AbsClockwise(shape->x,cam_x,HORIZONTAL,landscape);
-		yd = AbsClockwise(shape->y,cam_y,VERTICAL,landscape);
-
-		switch(decide_location(xd,yd,TANK_WIDTH,TANK_HEIGHT,shape))
-		{
-			case BOTTOM_RIGHT: /* pripad "X" */
-				cam->get_screen_coords(shape->x,shape->y,corner_spot);
-				sprites->rect.x = corner_spot.x;
-				sprites->rect.y = corner_spot.y;
-			break;
-			case BOTTOM_LEFT: /* pripad "|" */
-				sprites->rect.x = cam->window->x - (TILE_SIZE * xd);
-				sprites->rect.y = cam->window->y + TILE_SIZE*AbsClockwise(cam_y,shape->y,VERTICAL,landscape);
-			break;
-			case TOP_RIGHT: /* pripad "-" */
-				sprites->rect.x = cam->window->x + TILE_SIZE*AbsClockwise(cam_x,shape->x,HORIZONTAL,landscape);
-				sprites->rect.y = cam->window->y - (TILE_SIZE * yd);
-			break;
-			case TOP_LEFT: /* pripad "#" */
-				sprites->rect.x = cam->window->x - (TILE_SIZE * xd);
-				sprites->rect.y = cam->window->y - (TILE_SIZE * yd);
-			break;
-			default:
-				fprintf(stderr,"tank::show decide_location ERROR\n");
-		}
-
 		switch(facing)
 		{
 			case UP:
-				SDL_RenderCopy(renderer,sprites->tank_up,NULL,&(sprites->rect));
+				cam->render(sprites->tank_up,spriteArea);
 			break;
 			case DOWN:
-				SDL_RenderCopy(renderer,sprites->tank_down,NULL,&(sprites->rect));
+				cam->render(sprites->tank_down,spriteArea);
 			break;
 			case LEFT:
-				SDL_RenderCopy(renderer,sprites->tank_left,NULL,&(sprites->rect));
+				cam->render(sprites->tank_left,spriteArea);
 			break;
 			case RIGHT:
-				SDL_RenderCopy(renderer,sprites->tank_right,NULL,&(sprites->rect));
+				cam->render(sprites->tank_right,spriteArea);
 			break;
 			case UP_LEFT:
-				SDL_RenderCopy(renderer,sprites->tank_up_left,NULL,&(sprites->rect));
+				cam->render(sprites->tank_up_left,spriteArea);
 			break;
 			case UP_RIGHT:
-				SDL_RenderCopy(renderer,sprites->tank_up_right,NULL,&(sprites->rect));
+				cam->render(sprites->tank_up_right,spriteArea);
 			break;
 			case DOWN_LEFT:
-				SDL_RenderCopy(renderer,sprites->tank_down_left,NULL,&(sprites->rect));
+				cam->render(sprites->tank_down_left,spriteArea);
 			break;
 			case DOWN_RIGHT:
-				SDL_RenderCopy(renderer,sprites->tank_down_right,NULL,&(sprites->rect));
+				cam->render(sprites->tank_down_right,spriteArea);
 			break;
 			default:
 			break;
 		}
-
-		return (true);
 	}
-	else
-		return (false);
-
 }
 
 int tank::get_hit(int damage)
