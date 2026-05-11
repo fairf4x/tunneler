@@ -14,12 +14,12 @@
 #define MAX_ARMOR 300
 
 #define ENERGY_RECOVERY_HOME 40
-#define ENERGY_RECOVERY_ENEMY 15
+#define ENERGY_RECOVERY_ENEMY 30
 #define ARMOR_RECOVERY 5
 
 #define TILE_DIG_ENERGY 4
 #define MOVE_ENERGY 2
-#define FIRE_ENERGY 10
+#define FIRE_ENERGY 6
 
 #define NOWHERE		0x0	/* 0000 0000 */
 #define UP		0x1	/* 0000 0001 */
