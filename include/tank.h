@@ -36,7 +36,9 @@
 #define STEP 1			/* o kolik se ma tank posunout */
 
 #define TANK_WIDTH 7
+#define TANK_WIDTH_FP 5         /* footprint je o dva ctverecky mensi */
 #define TANK_HEIGHT 7
+#define TANK_HEIGHT_FP 5
 #define TANK_SIZE 7
 			/* 0000000
 			 * 0011100

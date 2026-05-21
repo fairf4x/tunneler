@@ -5,8 +5,8 @@
 #include <unistd.h>
 #include "commondef.h"
 
-#define PLACE_WIDTH	51
-#define PLACE_HEIGHT	51
+#define PLACE_WIDTH	65
+#define PLACE_HEIGHT	65
 
 #define OFFSET_X	15
 #define OFFSET_Y	15

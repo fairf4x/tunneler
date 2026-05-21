@@ -1,4 +1,5 @@
 #include "structure.h"
+#include "tank.h" /* kvuli konstantam TANK_WIDTH a TANK_HEIGHT */
 #include "commondef.h"	/* kvuli konstante MAX_PLAYER_CNT */
 #include <bits/stdc++.h>
 
@@ -19,8 +20,14 @@ structure::structure(char init_id, int xc, int yc,const char * bitmap)
 	ground.w = STRUCTURE_WIDTH;
 	ground.h = STRUCTURE_HEIGHT;
 
+	int px = xc - TANK_WIDTH_FP;
+	int py = yc - TANK_HEIGHT_FP;
+	landscape->correct_coord(px,py);
+
+	area perimeter = area(px,py,STRUCTURE_WIDTH+2*TANK_WIDTH_FP,STRUCTURE_HEIGHT+2*TANK_HEIGHT_FP);
+
 	/* vykopani hliny */
-	landscape->set_area(ground,PATH);
+	landscape->set_area(perimeter,PATH);
 
 	/* stavba zdi */
 	size_t i;
